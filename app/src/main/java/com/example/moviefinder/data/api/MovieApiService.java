@@ -13,4 +13,12 @@ public interface MovieApiService {
             @Query("language") String language,
             @Query("page") int page
     );
+    @GET("search/movie")
+    Call<MovieResponse> searchMovies(
+            @Query("api_key") String apiKey,
+            @Query("language") String language,
+            @Query("query") String query,   // новый параметр для поиска
+            @Query("page") int page
+    );
+
 }

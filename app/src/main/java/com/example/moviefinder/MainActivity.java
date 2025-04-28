@@ -2,6 +2,7 @@ package com.example.moviefinder;
 
 import android.os.Bundle;
 import android.widget.Toast;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,13 +29,41 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        fetchMovies();
+        // Обработчик SearchView для поиска
+        SearchView searchView = findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                fetchMovies(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.isEmpty()) {
+                    fetchMovies("popular");  // Загружаем популярные фильмы, если поиск пустой
+                }
+                return false;
+            }
+        });
+
+        // Загружаем популярные фильмы по умолчанию
+        fetchMovies("popular");
     }
 
-    private void fetchMovies() {
+    private void fetchMovies(String query) {
         MovieApiService apiService = ApiClient.getClient().create(MovieApiService.class);
-        Call<MovieResponse> call = apiService.getPopularMovies(API_KEY, "en-US", 1);
+        Call<MovieResponse> call;
 
+        // Если запрос пустой, загружаем популярные фильмы
+        if (query.equals("popular")) {
+            call = apiService.getPopularMovies(API_KEY, "en-US", 1);  // Загружаем популярные фильмы
+        } else {
+            // Если есть текст в поиске, ищем фильмы по запросу
+            call = apiService.searchMovies(API_KEY, "en-US", query, 1);  // Поиск фильмов по запросу
+        }
+
+        // Выполняем запрос
         call.enqueue(new Callback<MovieResponse>() {
             @Override
             public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -51,4 +80,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 }

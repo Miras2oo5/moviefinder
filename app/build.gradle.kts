@@ -8,8 +8,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.moviefinder"
-        minSdk = 24      // ✅ исправлено на 24
-        targetSdk = 35
+        minSdk = 26     // ✅ исправлено на 24
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
